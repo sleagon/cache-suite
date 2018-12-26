@@ -1,5 +1,7 @@
 # Cache Suite
 
+[![Build Status](https://travis-ci.org/sleagon/cache-suite.svg?branch=master)](https://travis-ci.org/sleagon/cache-suite)
+
 ## Features
 
 In order to keep our system as strong as possible, we may build multi level cache in production environment, such as memory/file system/redis/oss... This package is written
