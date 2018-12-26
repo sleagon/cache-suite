@@ -2,6 +2,10 @@
 
 ## Features
 
+In order to keep our system as strong as possible, we may build multi level cache in production environment, such as memory/file system/redis/oss... This package is written
+to manage this kind of problem. Just add your cacher middleware to the cache chain like
+koa middleware, then use cache.get/set simply. 😁😁😁
+
 - Fully typescript supported.
 - Koa-like cache handler.
 - Multi level cacher supported.
