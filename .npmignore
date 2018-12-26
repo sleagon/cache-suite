@@ -1,0 +1,5 @@
+.vscode
+src
+test
+node_modules
+.travis.yml

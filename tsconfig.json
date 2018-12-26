@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "esnext",
+    "jsx": "react",
+    "rootDir":"src",
+    "outDir":"lib",
+    "baseUrl": "./",
+    "moduleResolution": "node",
+    "declaration": true,
+    "sourceMap": true
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude":[
+    "node_modules",
+    "lib",
+    ".idea",
+    "dist",
+    ".git",
+    ".justconf",
+    ".vscode"
+  ]
+}
