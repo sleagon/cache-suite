@@ -30,6 +30,9 @@ class SimpleHandler implements Handler<number> {
     await next();
     return;
   };
+  public del = async (ctx: Context<number>, next?: () => Promise<void>): Promise<void> => {
+    this.mp.delete(ctx.key);
+  }
 }
 
 // the handler we mostly use, the + 100 here is just used to identity the result.
@@ -110,7 +113,7 @@ describe('Stack', () => {
     // test
     await cache.set('hello', 200);
     const v = await cache.get('hello');
-    expect(v).to.equal(300); // first middleware cache 200 as 300
+    expect(v).to.equal(300);
   });
 
   it('later middleware should rewrite the first cached data.', async () => {
@@ -126,6 +129,22 @@ describe('Stack', () => {
     // test get/set
     await cache.set('hello', 200);
     const v = await cache.get('hello');
-    expect(v).to.equal(2200); // first middleware cache 200 as 300
+    expect(v).to.equal(2200);
+  });
+
+  it('cached data should be cleared after calling del.', async () => {
+    const cache = new Cache<number>();
+    const handler = new SimpleHandler();
+
+    // first
+    cache.use(handler);
+
+    // test get/set
+    await cache.set('hello', 200);
+    const v = await cache.get('hello');
+    expect(v).to.equal(200);
+    await cache.del('hello');
+    const vv = await cache.get('hello');
+    expect(vv).to.equal(undefined);
   });
 });

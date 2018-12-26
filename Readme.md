@@ -37,6 +37,7 @@ Just like koa, you can add mddleware cache using ```cache.use(...)```. Function 
 export declare interface Handler<T> {
     get: HandlerFunc<T>;
     set?: HandlerFunc<T>;
+    del?: HandlerFunc<T>;
 }
 Cache#use(handler: Handler<T>): this;
 ```
@@ -54,6 +55,7 @@ const mp = new Map();
 const memoryCache = {
   get: async ctx => ctx.body = mp.get(ctx.key),
   set: async ctx => mp.set(ctx.key, ctx.body),
+  del: async ctx => mp.delete(ctx.key),
 }
 
 const cache = new Cache();
@@ -61,9 +63,13 @@ cache.use(memoryCache);
 
 (async function call() {
   await cache.set('foo', 'bar');
-  const data = await cache.get('foo');
+  let data = await cache.get('foo');
   console.log('>>>', data);
   // >>> bar
+  await cache.del('foo');
+  data = await cache.get('foo');
+  console.log('>>>', data);
+  // >>> undefined
 })()
 ```
 

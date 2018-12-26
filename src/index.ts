@@ -8,8 +8,8 @@ export declare interface Context<T> {
   err?: Error;
 }
 
-// standard cache method set/get
-export type Method = 'get' | 'set';
+// standard cache method set/get/del
+export type Method = 'get' | 'set' | 'del';
 
 // HandlerFunc middlware for set/get
 type HandlerFunc<T> = (ctx: Context<T>, next?: () => Promise<void>) => Promise<void>;
@@ -18,6 +18,7 @@ type HandlerFunc<T> = (ctx: Context<T>, next?: () => Promise<void>) => Promise<v
 export declare interface Handler<T> {
   get: HandlerFunc<T>;
   set?: HandlerFunc<T>;
+  del?: HandlerFunc<T>;
 }
 
 // Cache core for cache
@@ -39,6 +40,7 @@ export default class Cache<T> {
     this.handlers.push(handler);
     // compose all handler together
     this.composedHandlerMap.set('get', compose(this.handlers.map((h) => h.get.bind(h))));
+    this.composedHandlerMap.set('del', compose(this.handlers.filter((h) => h && h.del).map((h) => h.del.bind(h))));
     // compose set handler in reversed order.
     // e.g. you could use memory/local/redis/oss as your cache list,
     // when you set some data to cache, you should set them in reversed order.
@@ -104,6 +106,34 @@ export default class Cache<T> {
    */
   public async set(key: string, value: T): Promise<Error> {
     const { err } = await this.setContext({ key, body: value });
+    return err;
+  }
+
+  /**
+   * just like getContext
+   * @param ctx Context<T> koa-like context
+   * @returns Context<T>   modified context
+   */
+  public async delContext(ctx: Context<T>): Promise<Context<T>> {
+    assert(ctx, 'null context is not valid.');
+    assert(ctx.key, 'context#key is necessary.');
+    assert(this.handlers.length, 'forgot to call .use?');
+    const handler = this.composedHandlerMap.get('del');
+    if (!handler) {
+      return ctx;
+    }
+    await handler(ctx);
+    return ctx;
+  }
+
+  /**
+   * delete your data in a simple way
+   * @param key string   cached key
+   * @param value T      data to cache
+   * @returns Promise<T> just the payload you need
+   */
+  public async del(key: string): Promise<Error> {
+    const { err } = await this.setContext({ key });
     return err;
   }
 }
