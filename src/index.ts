@@ -3,9 +3,10 @@ import * as compose from 'koa-compose';
 
 // koa-like context
 export declare interface Context<T> {
-  key: string;
-  body?: T;
-  err?: Error;
+  key: string;         // key to get data
+  source?: string;     // data source
+  body?: T;            // payload
+  err?: Error;         // error got during getting data
 }
 
 // standard cache method set/get/del

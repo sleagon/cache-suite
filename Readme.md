@@ -89,6 +89,7 @@ class MemoryCache {
     ctx.body = this.mp.get(ctx.key);
     if (ctx.body) {
       ctx.body = '[from MemoryCache]' + ctx.body;
+      ctx.source = 'MEMORY';
       return;
     }
     await next();
@@ -108,6 +109,7 @@ class FileCache {
     ctx.body = await promisify(fs.readFile)(`${this.baseDir}/${ctx.key}`);
     // add some useless info to show the source of data.
     ctx.body = '[from FileCache]' + ctx.body.toString();
+    ctx.source = 'FILE';
   }
   async set(ctx, next) {
     await promisify(fs.writeFile)(`${this.baseDir}/${ctx.key}`, ctx.body);
